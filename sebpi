@@ -1,0 +1,74 @@
+#!/bin/bash
+
+COMMAND=$1
+
+function usage() {
+    echo "Usage: sebpi <install|setup>"
+    return -1
+}
+
+function confirm() {
+    # call with a prompt string or use a default
+    read -r -p "${1:-Are you sure? [y/N]} " response
+    case "$response" in
+        [yY][eE][sS]|[yY]) 
+            return 0
+            ;;
+        *)
+            return -1
+            ;;
+    esac
+}
+
+function install() {
+    if [[ "$#" -ne 2 ]]; then
+        echo "Illegal number of parameters"
+        return -1
+    fi
+
+    IMG_FILE="$1"
+    DEV_DISK="$2"
+
+    confirm "WARNING: This will erase completely the contents of the SD card at $DEV_DISK. Do you want to proceed? [y/N]" || return -1
+
+    sudo diskutil eraseDisk FAT32 RASPBIAN MBRFormat ${DEV_DISK/r/} || return -1
+    sleep 5
+    diskutil unmountdisk ${DEV_DISK/r/} || return -1
+    sleep 5
+    sudo dd if="$IMG_FILE" of=$DEV_DISK bs=1m || return -1
+    sleep 5
+    touch /Volumes/boot/ssh
+    sleep 1
+    cp sebpi-setup.sh /Volumes/boot
+    diskutil unmountdisk ${DEV_DISK/r/} || return -1
+    sed -i '' '/^192.168.1.2 /d' ~/.ssh/known_hosts
+
+    echo "Done! To continue:"
+    echo "  1. Insert your microSD card in the Raspberry Pi and turn it on."
+    echo "  2. Run sebpi setup"
+
+    return 0
+}
+
+function setup() {    
+    # run /boot/sebpi-install.sh on ssh
+    ##
+    echo "Running sebpi-install.sh on the Raspberry Pi..."
+    ssh pi@192.168.1.2 bash -s 'bash /boot/sebpi-install.sh && rm /boot/sebpi-install.sh'
+    echo "Please change the password (default: raspberry)"
+    ssh pi@192.168.1.2 passwd
+
+    return 0
+}
+
+case "$COMMAND" in
+    install)
+        install $2 $3;
+        ;;
+    setup)
+        setup;
+        ;;
+    *)
+        usage;
+        ;;
+esac
