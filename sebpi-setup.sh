@@ -51,6 +51,9 @@ if [ "$SEBPI_INSTALLED" == 0 ]; then
 	chmod +x /home/pi/speedtest-cli
 	sudo mv -f /home/pi/speedtest-cli /usr/local/bin/
 
+	# install namebench
+	sudo apt-get install namebench -y
+
 	sudo touch "$SEBPI_INSTALLED_FILE"
 fi
 
