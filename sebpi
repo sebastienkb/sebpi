@@ -38,14 +38,14 @@ function install() {
     sudo dd if="$IMG_FILE" of=$DEV_DISK bs=1m || return -1
     sleep 5
     touch /Volumes/boot/ssh
-    sleep 1
     cp sebpi-setup.sh /Volumes/boot
     diskutil unmountdisk ${DEV_DISK/r/} || return -1
     sed -i '' '/^192.168.1.2 /d' ~/.ssh/known_hosts
 
     echo "Done! To continue:"
     echo "  1. Insert your microSD card in the Raspberry Pi and turn it on."
-    echo "  2. Run sebpi setup"
+    echo "  2. Wait 5 minutes"
+    echo "  3. Come back to this terminal here and run 'sebpi setup'"
 
     return 0
 }
