@@ -26,7 +26,7 @@ sudo sh -c 'echo "LIGHTTPD_ENABLED=true" >> /etc/pihole/setupVars.conf'
 cd /home/pi
 curl -sSL https://install.pi-hole.net > install_pihole.sh
 chmod +x install_pihole.sh
-sudo ./install_pihole.sh --unattended
+sudo sh -c './install_pihole.sh --unattended'
 rm install_pihole.sh
 echo | pihole -a -p
 
