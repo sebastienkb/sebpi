@@ -2,6 +2,7 @@
 
 COMMAND=$1
 SEBPI_SETUP_FILE_NAME="sebpi-setup.sh"
+RASPBERRY_PI_IP_ADDRESS="192.168.1.2"
 
 function usage() {
     echo "Usage: sebpi <install|setup>"
@@ -42,7 +43,7 @@ function install() {
     touch /Volumes/boot/ssh
     cp "$SEBPI_SETUP_FILE_NAME" /Volumes/boot
     diskutil unmountdisk ${DEV_DISK/r/} || return -1
-    sed -i '' '/^192.168.1.2 /d' ~/.ssh/known_hosts
+    sed -i '' "/^$RASPBERRY_PI_IP_ADDRESS /d" ~/.ssh/known_hosts
 
     echo "Done! To continue:"
     echo "  1. Insert your microSD card in the Raspberry Pi and turn it on."
@@ -55,10 +56,11 @@ function install() {
 function setup() {    
     # run /boot/sebpi-install.sh on ssh
     ##
+    sed -i '' "/^$RASPBERRY_PI_IP_ADDRESS /d" ~/.ssh/known_hosts
     echo "Running sebpi-install.sh on the Raspberry Pi..."
-    ssh -t pi@192.168.1.2 "sudo /boot/$SEBPI_SETUP_FILE_NAME"
+    ssh -t pi@$RASPBERRY_PI_IP_ADDRESS "sudo /boot/$SEBPI_SETUP_FILE_NAME"
     echo "Please change the password (default: raspberry)"
-    ssh -t pi@192.168.1.2 passwd
+    ssh -t pi@$RASPBERRY_PI_IP_ADDRESS passwd
 
     return 0
 }
