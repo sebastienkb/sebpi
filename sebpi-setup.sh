@@ -12,7 +12,6 @@ sudo apt-get update -y && sudo apt-get dist-upgrade -y && sudo apt-get autoremov
 sudo mkdir -p /etc/pihole
 sudo rm /etc/pihole/setupVars.conf
 sudo touch /etc/pihole/setupVars.conf
-sudo sh -c 'echo "WEBPASSWORD=" > /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "PIHOLE_INTERFACE=eth0" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "IPV4_ADDRESS=192.168.1.2/24" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "IPV6_ADDRESS=" >> /etc/pihole/setupVars.conf'
