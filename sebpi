@@ -22,7 +22,8 @@ function confirm() {
 
 function install() {
     if [[ "$#" -ne 2 ]]; then
-        echo "Illegal number of parameters"
+        echo "Usage: sebpi install <img_file> <dev_disk>"
+        echo "Example: sebpi install raspbian-stretch-lite.img /dev/rdisk3"
         return -1
     fi
 
@@ -54,9 +55,9 @@ function setup() {
     # run /boot/sebpi-install.sh on ssh
     ##
     echo "Running sebpi-install.sh on the Raspberry Pi..."
-    ssh pi@192.168.1.2 bash -s 'bash /boot/sebpi-install.sh && rm /boot/sebpi-install.sh'
+    ssh -t pi@192.168.1.2 'sudo /boot/sebpi-install.sh'
     echo "Please change the password (default: raspberry)"
-    ssh pi@192.168.1.2 passwd
+    ssh -t pi@192.168.1.2 passwd
 
     return 0
 }
