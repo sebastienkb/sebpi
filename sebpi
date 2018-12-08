@@ -1,6 +1,7 @@
 #!/bin/bash
 
 COMMAND=$1
+SEBPI_SETUP_FILE_NAME="sebpi-setup.sh"
 
 function usage() {
     echo "Usage: sebpi <install|setup>"
@@ -39,7 +40,7 @@ function install() {
     sudo dd if="$IMG_FILE" of=$DEV_DISK bs=1m || return -1
     sleep 5
     touch /Volumes/boot/ssh
-    cp sebpi-setup.sh /Volumes/boot
+    cp "$SEBPI_SETUP_FILE_NAME" /Volumes/boot
     diskutil unmountdisk ${DEV_DISK/r/} || return -1
     sed -i '' '/^192.168.1.2 /d' ~/.ssh/known_hosts
 
@@ -55,7 +56,7 @@ function setup() {
     # run /boot/sebpi-install.sh on ssh
     ##
     echo "Running sebpi-install.sh on the Raspberry Pi..."
-    ssh -t pi@192.168.1.2 'sudo /boot/sebpi-install.sh'
+    ssh -t pi@192.168.1.2 "sudo /boot/$SEBPI_SETUP_FILE_NAME"
     echo "Please change the password (default: raspberry)"
     ssh -t pi@192.168.1.2 passwd
 
