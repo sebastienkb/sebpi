@@ -7,7 +7,7 @@ if [ -e "$SEBPI_INSTALLED_FILE" ]; then
 	SEBPI_INSTALLED=1
 fi
 
-sudo apt-get update -y && sudo apt-get dist-upgrade -y && sudo apt-get autoremove -y
+sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 
 sudo mkdir -p /etc/pihole
 sudo rm /etc/pihole/setupVars.conf

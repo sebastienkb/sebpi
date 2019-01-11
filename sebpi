@@ -60,9 +60,7 @@ function install() {
     return 0
 }
 
-function setup() {    
-    # run /boot/sebpi-install.sh on ssh
-    ##
+function setup() {
     sed -i '' "/^$RASPI_IP_ADDRESS /d" ~/.ssh/known_hosts
     echo "Running sebpi-update.sh on the Raspberry Pi..."
     ssh -t pi@$RASPI_IP_ADDRESS "sudo /boot/$SEBPI_UPDATE_FILE_NAME"
