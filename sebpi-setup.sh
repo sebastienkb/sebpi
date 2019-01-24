@@ -40,7 +40,7 @@ if [ "$SEBPI_INSTALLED" == 0 ]; then
 	# sudo sh -c 'echo "tmpfs /var/log tmpfs defaults,noatime,nosuid,mode=0755,size=100m 0 0" >> /etc/fstab'
 	# sudo sh -c 'echo "tmpfs /var/run tmpfs defaults,noatime,nosuid,mode=0755,size=2m 0 0" >> /etc/fstab'
 
-	# disable front LEDs on start
+	# disable front LEDs on login
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'")" /etc/rc.local
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led1/brightness'")" /etc/rc.local
 
@@ -60,5 +60,6 @@ if [ "$SEBPI_INSTALLED" == 0 ]; then
 	sudo touch "$SEBPI_INSTALLED_FILE"
 fi
 
+# disable front LEDs immediately
 sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'
 sudo sh -c 'echo 0 > /sys/class/leds/led1/brightness'

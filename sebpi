@@ -43,6 +43,8 @@ function install() {
     sudo diskutil eraseDisk FAT32 RASPBIAN MBRFormat ${DEV_DISK/r/} || fail "Could not erase ${DEV_DISK/r/}"
     sleep 5
     diskutil unmountdisk ${DEV_DISK/r/} || fail "Could not unmount ${DEV_DISK/r/}"
+
+    echo "Copying $IMG_FILE to $DEV_DISK..."
     sleep 5
     sudo dd if="$IMG_FILE" of=$DEV_DISK bs=1m || fail "Could not copy $IMG_FILE onto $DEV_DISK"
     sleep 5
