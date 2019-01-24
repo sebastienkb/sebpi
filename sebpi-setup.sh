@@ -7,7 +7,9 @@ if [ -e "$SEBPI_INSTALLED_FILE" ]; then
 	SEBPI_INSTALLED=1
 fi
 
-sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+SEBPI_LOCALE="en_GB.UTF-8"
+sudo locale-gen "$SEBPI_LOCALE"
+sudo update-locale LC_ALL=$SEBPI_LOCALE LANG=$SEBPI_LOCALE
 
 sudo mkdir -p /etc/pihole
 sudo rm /etc/pihole/setupVars.conf
