@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PUSHBULLET_API_KEY="$1"
+
 SEBPI_INSTALLED_FILE=/boot/sebpi.installed
 SEBPI_INSTALLED=0
 if [ -e "$SEBPI_INSTALLED_FILE" ]; then
@@ -44,10 +46,10 @@ if [ "$SEBPI_INSTALLED" == 0 ]; then
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'")" /etc/rc.local
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led1/brightness'")" /etc/rc.local
 
-	# enable auto login of user pi
-	# sudo systemctl set-default multi-user.target
-	# sudo sed /etc/systemd/system/autologin@.service -i -e "s#^ExecStart=-/sbin/agetty --autologin [^[:space:]]*#ExecStart=-/sbin/agetty --autologin pi#"
-	# sudo ln -fs /etc/systemd/system/autologin@.service /etc/systemd/system/getty.target.wants/getty@tty1.service
+	if [ ! -z "$PUSHBULLET_API_KEY" ]; then
+		# send a pushbullet notification on login
+   		sudo sed -i '$i'"$(echo "curl -s -u $PUSHBULLET_API_KEY: https://api.pushbullet.com/v2/pushes -d type=note -d title=Raspberry\\\ Pi -d body=Raspberry\\\ Pi\\\ is\\\ up! > /dev/null")" /etc/rc.local
+    fi
 
 	# install speedtest-cli
 	wget -O /home/pi/speedtest-cli https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py
