@@ -18,11 +18,13 @@ sudo sh -c 'echo "PIHOLE_INTERFACE=eth0" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "IPV4_ADDRESS=192.168.1.2/24" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "IPV6_ADDRESS=" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "PIHOLE_DNS_1=1.1.1.1" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "PIHOLE_DNS_2=8.8.8.8" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "PIHOLE_DNS_2=1.0.0.1" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "QUERY_LOGGING=true" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "INSTALL_WEB_SERVER=true" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "INSTALL_WEB_INTERFACE=true" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "LIGHTTPD_ENABLED=true" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "BLOCKING_ENABLED=true" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "WEBPASSWORD=" >> /etc/pihole/setupVars.conf'
 
 cd /home/pi
 curl -sSL https://install.pi-hole.net > install_pihole.sh
