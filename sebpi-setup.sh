@@ -35,6 +35,13 @@ sudo sh -c './install_pihole.sh --unattended'
 rm install_pihole.sh
 echo | pihole -a -p
 
+if [ ! -z "$PUSHBULLET_API_KEY" ]; then
+	if ! grep -q "$PUSHBULLET_API_KEY" "/etc/rc.local"; then
+		# send a pushbullet notification on login
+		sudo sed -i '$i'"$(echo "curl -s -u $PUSHBULLET_API_KEY: https://api.pushbullet.com/v2/pushes -d type=note -d title=Raspberry\\\ Pi -d body=Raspberry\\\ Pi\\\ is\\\ up! > /dev/null")" /etc/rc.local
+	fi
+fi
+
 if [ "$SEBPI_INSTALLED" == 0 ]; then
 	# https://www.zdnet.com/article/raspberry-pi-extending-the-life-of-the-sd-card/
 	# sudo sh -c 'echo "tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0" >> /etc/fstab'
@@ -45,11 +52,6 @@ if [ "$SEBPI_INSTALLED" == 0 ]; then
 	# disable front LEDs on login
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'")" /etc/rc.local
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led1/brightness'")" /etc/rc.local
-
-	if [ ! -z "$PUSHBULLET_API_KEY" ]; then
-		# send a pushbullet notification on login
-   		sudo sed -i '$i'"$(echo "curl -s -u $PUSHBULLET_API_KEY: https://api.pushbullet.com/v2/pushes -d type=note -d title=Raspberry\\\ Pi -d body=Raspberry\\\ Pi\\\ is\\\ up! > /dev/null")" /etc/rc.local
-    fi
 
 	# install speedtest-cli
 	wget -O /home/pi/speedtest-cli https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py
