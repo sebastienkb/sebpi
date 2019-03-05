@@ -2,16 +2,32 @@
 
 PUSHBULLET_API_KEY="$1"
 
+SEBPI_UPDATE_SCRIPT=/boot/sebpi-update.sh
 SEBPI_INSTALLED_FILE=/boot/sebpi.installed
+SEBPI_LOCALE_GEN_FILE=/boot/sebpi.locale.gen
+
 SEBPI_INSTALLED=0
+SEBPI_LOCALE_GEN=0
+
 if [ -e "$SEBPI_INSTALLED_FILE" ]; then
 	echo "This is not the first time this script is run, ignoring some one-time settings."
 	SEBPI_INSTALLED=1
 fi
 
-SEBPI_LOCALE="en_GB.UTF-8"
-sudo locale-gen "$SEBPI_LOCALE"
-sudo update-locale LC_ALL=$SEBPI_LOCALE LANG=$SEBPI_LOCALE
+if [ -e "$SEBPI_LOCALE_GEN_FILE" ]; then
+	SEBPI_LOCALE_GEN=1
+fi
+
+# Fix locale issues on Debian
+sudo sed -i 's/^AcceptEnv.*/#AcceptEnv LANG LC_*/' /etc/ssh/sshd_config
+
+if [ "$SEBPI_LOCALE_GEN" == 0 ]; then
+	SEBPI_LOCALE="en_GB.UTF-8"
+	sudo locale-gen "$SEBPI_LOCALE"
+	sudo update-locale LC_ALL=$SEBPI_LOCALE LANG=$SEBPI_LOCALE
+
+	sudo touch "$SEBPI_LOCALE_GEN_FILE"
+fi
 
 sudo mkdir -p /etc/pihole
 sudo rm /etc/pihole/setupVars.conf
