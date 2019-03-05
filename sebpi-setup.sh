@@ -69,6 +69,8 @@ if [ "$SEBPI_INSTALLED" == 0 ]; then
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'")" /etc/rc.local
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led1/brightness'")" /etc/rc.local
 
+	sudo $SEBPI_UPDATE_SCRIPT
+
 	# install speedtest-cli
 	wget -O /home/pi/speedtest-cli https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py
 	chmod +x /home/pi/speedtest-cli
