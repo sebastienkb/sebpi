@@ -1,17 +1,18 @@
 #!/bin/bash
 
+SCRIPT_NAME=$0
 COMMAND=$1
 SEBPI_SETUP_FILE_NAME="sebpi-setup.sh"
 SEBPI_UPDATE_FILE_NAME="sebpi-update.sh"
 RASPI_IP_ADDRESS="192.168.1.2"
 
 function usage() {
-    echo "Usage: $0 <install|setup>"
+    echo "Usage: $SCRIPT_NAME <install|setup>"
     return -1
 }
 
 function fail() {
-    echo "$0 error: $1"
+    echo "$SCRIPT_NAME error: $1"
     exit -1
 }
 
@@ -30,13 +31,13 @@ function confirm() {
 
 function install() {
     if [[ "$#" -ne 2 ]]; then
-        echo "Usage: $0 install <img_file> <dev_disk>"
-        echo "Example: $0 install raspbian-stretch-lite.img /dev/rdisk3"
+        echo "Usage: $SCRIPT_NAME install <img_file> <dev_disk>"
+        echo "Example: $SCRIPT_NAME install raspbian-stretch-lite.img /dev/rdisk3"
         return -1
     fi
 
-    IMG_FILE="$1"
-    DEV_DISK="$2"
+    local IMG_FILE="$1"
+    local DEV_DISK="$2"
 
     confirm "WARNING: This will erase completely the contents of the SD card at $DEV_DISK. Do you want to proceed? [y/N]" || return -1
 
@@ -63,10 +64,14 @@ function install() {
 }
 
 function setup() {
+    if [[ "$#" -gt 0 ]]; then
+        local PUSHBULLET_API_KEY="$1"
+    fi
+
     sed -i '' "/^$RASPI_IP_ADDRESS /d" ~/.ssh/known_hosts
 
     echo "Running $SEBPI_SETUP_FILE_NAME on the Raspberry Pi..."
-    ssh -t pi@$RASPI_IP_ADDRESS "sudo /boot/$SEBPI_SETUP_FILE_NAME"
+    ssh -t pi@$RASPI_IP_ADDRESS "sudo /boot/$SEBPI_SETUP_FILE_NAME $PUSHBULLET_API_KEY"
 
     echo "Please change the password (default: raspberry)"
     ssh -t pi@$RASPI_IP_ADDRESS "passwd"
@@ -79,7 +84,7 @@ case "$COMMAND" in
         install $2 $3;
         ;;
     setup)
-        setup;
+        setup $2;
         ;;
     *)
         usage;
