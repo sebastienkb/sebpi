@@ -64,12 +64,12 @@ function install() {
 
 function setup() {
     sed -i '' "/^$RASPI_IP_ADDRESS /d" ~/.ssh/known_hosts
-    echo "Running sebpi-update.sh on the Raspberry Pi..."
-    ssh -t pi@$RASPI_IP_ADDRESS "sudo /boot/$SEBPI_UPDATE_FILE_NAME"
-    echo "Running sebpi-install.sh on the Raspberry Pi..."
+
+    echo "Running $SEBPI_SETUP_FILE_NAME on the Raspberry Pi..."
     ssh -t pi@$RASPI_IP_ADDRESS "sudo /boot/$SEBPI_SETUP_FILE_NAME"
+
     echo "Please change the password (default: raspberry)"
-    ssh -t pi@$RASPI_IP_ADDRESS passwd
+    ssh -t pi@$RASPI_IP_ADDRESS "passwd"
 
     return 0
 }
