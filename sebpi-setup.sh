@@ -34,36 +34,12 @@ if [ ! -e "$SEBPI_LOCALE_GEN_FILE" ]; then
 	sudo touch "$SEBPI_LOCALE_GEN_FILE"
 fi
 
-sudo mkdir -p /etc/pihole
-sudo rm -f /etc/pihole/setupVars.conf
-sudo touch /etc/pihole/setupVars.conf
-sudo sh -c 'echo "PIHOLE_INTERFACE=eth0" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "IPV4_ADDRESS=192.168.1.2/24" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "IPV6_ADDRESS=" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "PIHOLE_DNS_1=1.1.1.1" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "PIHOLE_DNS_2=1.0.0.1" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "QUERY_LOGGING=true" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "INSTALL_WEB_SERVER=true" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "INSTALL_WEB_INTERFACE=true" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "LIGHTTPD_ENABLED=true" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "BLOCKING_ENABLED=true" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "WEBPASSWORD=" >> /etc/pihole/setupVars.conf'
-
-cd /home/pi || exit 1
-
 # check DNS is working before attempting install
 until ping -c1 www.google.com
 do
     sudo sh -c 'echo "nameserver 1.1.1.1" > /etc/resolv.conf' # temp fix if DNS fails, note that resolv.conf will be overriden during pihole install
     sleep 1
 done
-
-curl -sSL https://install.pi-hole.net > install_pihole.sh
-chmod +x install_pihole.sh
-sudo sh -c './install_pihole.sh --unattended'
-sudo sh -c './install_pihole.sh --unattended' # run script twice because it fails at every first install and succeeds at 2nd - don't know why yet
-rm install_pihole.sh
-echo | pihole -a -p
 
 if [ -n "$PUSHBULLET_API_KEY" ]; then
 	if ! grep -q "$PUSHBULLET_API_KEY" "/etc/rc.local"; then
@@ -95,6 +71,30 @@ if [ ! -e "$SEBPI_INSTALLED_FILE" ]; then
 
 	sudo touch "$SEBPI_INSTALLED_FILE"
 fi
+
+sudo mkdir -p /etc/pihole
+sudo rm -f /etc/pihole/setupVars.conf
+sudo touch /etc/pihole/setupVars.conf
+sudo sh -c 'echo "PIHOLE_INTERFACE=eth0" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "IPV4_ADDRESS=192.168.1.2/24" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "IPV6_ADDRESS=" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "PIHOLE_DNS_1=1.1.1.1" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "PIHOLE_DNS_2=1.0.0.1" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "QUERY_LOGGING=true" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "INSTALL_WEB_SERVER=true" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "INSTALL_WEB_INTERFACE=true" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "LIGHTTPD_ENABLED=true" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "BLOCKING_ENABLED=true" >> /etc/pihole/setupVars.conf'
+sudo sh -c 'echo "WEBPASSWORD=" >> /etc/pihole/setupVars.conf'
+
+cd /home/pi || exit 1
+
+curl -sSL https://install.pi-hole.net > install_pihole.sh
+chmod +x install_pihole.sh
+sudo sh -c './install_pihole.sh --unattended'
+sudo sh -c './install_pihole.sh --unattended' # run script twice because it fails at every first install and succeeds at 2nd - don't know why yet
+rm install_pihole.sh
+echo | pihole -a -p
 
 # disable physical board LEDs immediately
 sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'
