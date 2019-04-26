@@ -49,10 +49,19 @@ sudo sh -c 'echo "LIGHTTPD_ENABLED=true" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "BLOCKING_ENABLED=true" >> /etc/pihole/setupVars.conf'
 sudo sh -c 'echo "WEBPASSWORD=" >> /etc/pihole/setupVars.conf'
 
-cd /home/pi
+cd /home/pi || exit 1
+
+# check DNS is working before attempting install
+until ping -c1 www.google.com
+do
+    sudo sh -c 'echo "nameserver 1.1.1.1" > /etc/resolv.conf' # temp fix if DNS fails, note that resolv.conf will be overriden during pihole install
+    sleep 1
+done
+
 curl -sSL https://install.pi-hole.net > install_pihole.sh
 chmod +x install_pihole.sh
 sudo sh -c './install_pihole.sh --unattended'
+sudo sh -c './install_pihole.sh --unattended' # run script twice because it fails at every first install and succeeds at 2nd - don't know why yet
 rm install_pihole.sh
 echo | pihole -a -p
 
