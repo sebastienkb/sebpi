@@ -69,33 +69,33 @@ if [ -n "$PUSHBULLET_API_KEY" ]; then
 	if ! grep -q "$PUSHBULLET_API_KEY" "/etc/rc.local"; then
 		# send a pushbullet notification on login
 		sudo sed -i '$i'"$(echo "curl -s -u $PUSHBULLET_API_KEY: https://api.pushbullet.com/v2/pushes -d type=note -d title=Raspberry\\\ Pi -d body=Raspberry\\\ Pi\\\ is\\\ up! > /dev/null")" /etc/rc.local
+
+		# TODO - use PushBullet to send healthcheck warnings: low free space / high CPU / internet lost
 	fi
 fi
 
 if [ ! -e "$SEBPI_INSTALLED_FILE" ]; then
+	# TODO - attempt to lower I/O frequency on SD card
 	# https://www.zdnet.com/article/raspberry-pi-extending-the-life-of-the-sd-card/
 	# sudo sh -c 'echo "tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0" >> /etc/fstab'
 	# sudo sh -c 'echo "tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=30m 0 0" >> /etc/fstab'
 	# sudo sh -c 'echo "tmpfs /var/log tmpfs defaults,noatime,nosuid,mode=0755,size=100m 0 0" >> /etc/fstab'
 	# sudo sh -c 'echo "tmpfs /var/run tmpfs defaults,noatime,nosuid,mode=0755,size=2m 0 0" >> /etc/fstab'
 
-	# disable front LEDs on login
+	# disable physical board LEDs on login
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'")" /etc/rc.local
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led1/brightness'")" /etc/rc.local
 
 	sudo sh -c "$SEBPI_UPDATE_SCRIPT"
 
 	# install speedtest-cli
-	wget -O /home/pi/speedtest-cli https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py
-	chmod +x /home/pi/speedtest-cli
-	sudo mv -f /home/pi/speedtest-cli /usr/local/bin/
-
-	# install namebench
-	sudo apt-get install namebench -y
+	wget -O speedtest-cli https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py
+	chmod +x speedtest-cli
+	sudo mv -f speedtest-cli /usr/local/bin/
 
 	sudo touch "$SEBPI_INSTALLED_FILE"
 fi
 
-# disable front LEDs immediately
+# disable physical board LEDs immediately
 sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'
 sudo sh -c 'echo 0 > /sys/class/leds/led1/brightness'
