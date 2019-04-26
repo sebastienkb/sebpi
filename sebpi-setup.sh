@@ -1,6 +1,22 @@
 #!/bin/bash
 
+function confirm() {
+    # call with a prompt string or use a default
+    read -r -p "${1:-Are you sure?} [y/N] " response
+    case "$response" in
+        [yY][eE][sS]|[yY]) 
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
 PUSHBULLET_API_KEY="$1"
+if [ -z "$PUSHBULLET_API_KEY" ]; then
+    confirm "No PushBullet API key was provided in parameter. Continue?" || exit 1
+fi
 
 SEBPI_UPDATE_SCRIPT=/boot/sebpi-update.sh
 SEBPI_INSTALLED_FILE=/boot/sebpi.installed
