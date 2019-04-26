@@ -55,12 +55,11 @@ function install() {
     diskutil unmountdisk ${DEV_DISK/r/} || fail "Could not unmount ${DEV_DISK/r/}"
     sed -i '' "/^$RASPI_IP_ADDRESS /d" ~/.ssh/known_hosts
 
-    echo "Done! To continue:"
-    echo "  1. Insert your microSD card in the Raspberry Pi and turn it on."
-    echo "  2. Wait 5 minutes (seriously)."
-    echo "  3. Come back to this terminal here and run 'sebpi setup'"
-
-    return 0
+    echo "Will try to ping $RASPI_IP_ADDRESS. Please insert MicroSD card in your RPi or ^C"
+    until ping -c1 $RASPI_IP_ADDRESS
+    do
+        sleep 1
+    done
 }
 
 function setup() {
