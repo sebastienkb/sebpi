@@ -8,12 +8,12 @@ RASPI_IP_ADDRESS="192.168.1.2"
 
 function usage() {
     echo "Usage: $SCRIPT_NAME <install|setup>"
-    return -1
+    return 1
 }
 
 function fail() {
     echo "$SCRIPT_NAME error: $1"
-    exit -1
+    exit 1
 }
 
 function confirm() {
@@ -24,7 +24,7 @@ function confirm() {
             return 0
             ;;
         *)
-            return -1
+            return 1
             ;;
     esac
 }
@@ -33,7 +33,7 @@ function install() {
     if [[ "$#" -ne 2 ]]; then
         echo "Usage: $SCRIPT_NAME install <img_file> <dev_disk>"
         echo "Example: $SCRIPT_NAME install raspbian-stretch-lite.img /dev/rdisk3"
-        return -1
+        return 1
     fi
 
     local IMG_FILE="$1"
