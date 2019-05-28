@@ -13,6 +13,19 @@ function confirm() {
     esac
 }
 
+function install_log2ram() {
+	if [ -e "/usr/local/bin/uninstall-log2ram.sh" ]; then
+		chmod +x /usr/local/bin/uninstall-log2ram.sh && sudo /usr/local/bin/uninstall-log2ram.sh
+	fi
+
+	curl -Lo log2ram.tar.gz https://github.com/azlux/log2ram/archive/master.tar.gz
+	tar xf log2ram.tar.gz
+	cd log2ram-master
+	chmod +x install.sh && sudo ./install.sh
+	cd ..
+	rm -r log2ram-master
+}
+
 function install_speedtest() {
 	wget -O speedtest-cli https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py
 	chmod +x speedtest-cli
@@ -83,12 +96,7 @@ if [ -n "$PUSHBULLET_API_KEY" ]; then
 fi
 
 if [ ! -e "$SEBPI_INSTALLED_FILE" ]; then
-	# TODO - attempt to lower I/O frequency on SD card
-	# https://www.zdnet.com/article/raspberry-pi-extending-the-life-of-the-sd-card/
-	# sudo sh -c 'echo "tmpfs /tmp tmpfs defaults,noatime,nosuid,size=100m 0 0" >> /etc/fstab'
-	# sudo sh -c 'echo "tmpfs /var/tmp tmpfs defaults,noatime,nosuid,size=30m 0 0" >> /etc/fstab'
-	# sudo sh -c 'echo "tmpfs /var/log tmpfs defaults,noatime,nosuid,mode=0755,size=100m 0 0" >> /etc/fstab'
-	# sudo sh -c 'echo "tmpfs /var/run tmpfs defaults,noatime,nosuid,mode=0755,size=2m 0 0" >> /etc/fstab'
+	install_log2ram
 
 	# disable physical board LEDs on login
 	sudo sed -i '$i'"$(echo "sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'")" /etc/rc.local
