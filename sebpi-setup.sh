@@ -77,7 +77,7 @@ if [ -n "$PUSHBULLET_API_KEY" ]; then
 	if ! grep -q "$PUSHBULLET_API_KEY" "/etc/rc.local"; then
 		# send a pushbullet notification on login
 		sudo sed -i '$i'"$(echo "curl -s -u $PUSHBULLET_API_KEY: https://api.pushbullet.com/v2/pushes -d type=note -d title=Raspberry\\\ Pi -d body=Raspberry\\\ Pi\\\ is\\\ up! > /dev/null")" /etc/rc.local
-
+		curl -s -u $PUSHBULLET_API_KEY: https://api.pushbullet.com/v2/pushes -d type=note -d title="Raspberry Pi" -d body="PushBullet enabled!" > /dev/null
 		# TODO - use PushBullet to send healthcheck warnings: low free space / high CPU / internet lost
 	fi
 fi
@@ -106,3 +106,7 @@ install_pihole
 # disable physical board LEDs immediately
 sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'
 sudo sh -c 'echo 0 > /sys/class/leds/led1/brightness'
+
+if [ -n "$PUSHBULLET_API_KEY" ]; then
+    curl -s -u $PUSHBULLET_API_KEY: https://api.pushbullet.com/v2/pushes -d type=note -d title="Raspberry Pi" -d body="sebpi setup finished!" > /dev/null
+fi
