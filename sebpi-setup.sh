@@ -4,13 +4,45 @@ function confirm() {
     # call with a prompt string or use a default
     read -r -p "${1:-Are you sure?} [y/N] " response
     case "$response" in
-        [yY][eE][sS]|[yY]) 
+        [yY][eE][sS]|[yY])
             return 0
             ;;
         *)
             return 1
             ;;
     esac
+}
+
+function install_speedtest() {
+	wget -O speedtest-cli https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py
+	chmod +x speedtest-cli
+	sudo mv -f speedtest-cli /usr/local/bin/
+}
+
+function install_pihole() {
+	sudo mkdir -p /etc/pihole
+	sudo rm -f /etc/pihole/setupVars.conf
+	sudo touch /etc/pihole/setupVars.conf
+	sudo sh -c 'echo "PIHOLE_INTERFACE=eth0" >> /etc/pihole/setupVars.conf'
+	sudo sh -c 'echo "IPV4_ADDRESS=192.168.1.2/24" >> /etc/pihole/setupVars.conf'
+	sudo sh -c 'echo "IPV6_ADDRESS=" >> /etc/pihole/setupVars.conf'
+	sudo sh -c 'echo "PIHOLE_DNS_1=1.1.1.1" >> /etc/pihole/setupVars.conf'
+	sudo sh -c 'echo "PIHOLE_DNS_2=1.0.0.1" >> /etc/pihole/setupVars.conf'
+	sudo sh -c 'echo "QUERY_LOGGING=true" >> /etc/pihole/setupVars.conf'
+	sudo sh -c 'echo "INSTALL_WEB_SERVER=true" >> /etc/pihole/setupVars.conf'
+	sudo sh -c 'echo "INSTALL_WEB_INTERFACE=true" >> /etc/pihole/setupVars.conf'
+	sudo sh -c 'echo "LIGHTTPD_ENABLED=true" >> /etc/pihole/setupVars.conf'
+	sudo sh -c 'echo "BLOCKING_ENABLED=true" >> /etc/pihole/setupVars.conf'
+	sudo sh -c 'echo "WEBPASSWORD=" >> /etc/pihole/setupVars.conf'
+
+	cd /home/pi || exit 1
+
+	curl -sSL https://install.pi-hole.net > install_pihole.sh
+	chmod +x install_pihole.sh
+	sudo sh -c './install_pihole.sh --unattended'
+	sudo sh -c './install_pihole.sh --unattended' # run script twice because it fails at every first install and succeeds at 2nd - don't know why yet
+	rm install_pihole.sh
+	echo | pihole -a -p
 }
 
 PUSHBULLET_API_KEY="$1"
@@ -64,37 +96,12 @@ if [ ! -e "$SEBPI_INSTALLED_FILE" ]; then
 
 	sudo sh -c "$SEBPI_UPDATE_SCRIPT"
 
-	# install speedtest-cli
-	wget -O speedtest-cli https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py
-	chmod +x speedtest-cli
-	sudo mv -f speedtest-cli /usr/local/bin/
+	install_speedtest
 
 	sudo touch "$SEBPI_INSTALLED_FILE"
 fi
 
-sudo mkdir -p /etc/pihole
-sudo rm -f /etc/pihole/setupVars.conf
-sudo touch /etc/pihole/setupVars.conf
-sudo sh -c 'echo "PIHOLE_INTERFACE=eth0" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "IPV4_ADDRESS=192.168.1.2/24" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "IPV6_ADDRESS=" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "PIHOLE_DNS_1=1.1.1.1" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "PIHOLE_DNS_2=1.0.0.1" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "QUERY_LOGGING=true" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "INSTALL_WEB_SERVER=true" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "INSTALL_WEB_INTERFACE=true" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "LIGHTTPD_ENABLED=true" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "BLOCKING_ENABLED=true" >> /etc/pihole/setupVars.conf'
-sudo sh -c 'echo "WEBPASSWORD=" >> /etc/pihole/setupVars.conf'
-
-cd /home/pi || exit 1
-
-curl -sSL https://install.pi-hole.net > install_pihole.sh
-chmod +x install_pihole.sh
-sudo sh -c './install_pihole.sh --unattended'
-sudo sh -c './install_pihole.sh --unattended' # run script twice because it fails at every first install and succeeds at 2nd - don't know why yet
-rm install_pihole.sh
-echo | pihole -a -p
+install_pihole
 
 # disable physical board LEDs immediately
 sudo sh -c 'echo 0 > /sys/class/leds/led0/brightness'
