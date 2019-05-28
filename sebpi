@@ -20,7 +20,7 @@ function confirm() {
     # call with a prompt string or use a default
     read -r -p "${1:-Are you sure? [y/N]} " response
     case "$response" in
-        [yY][eE][sS]|[yY]) 
+        [yY][eE][sS]|[yY])
             return 0
             ;;
         *)
@@ -41,7 +41,7 @@ function install() {
 
     confirm "WARNING: This will erase completely the contents of the SD card at $DEV_DISK. Do you want to proceed? [y/N]" || return -1
 
-    sudo diskutil eraseDisk FAT32 RASPBIAN MBRFormat ${DEV_DISK/r/} || fail "Could not erase ${DEV_DISK/r/}"
+    sudo diskutil secureErase 0 ${DEV_DISK/r/} || fail "Could not erase ${DEV_DISK/r/}"
     sleep 5
     diskutil unmountdisk ${DEV_DISK/r/} || fail "Could not unmount ${DEV_DISK/r/}"
 
