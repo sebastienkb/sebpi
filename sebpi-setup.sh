@@ -24,6 +24,7 @@ function install_log2ram() {
 	chmod +x install.sh && sudo ./install.sh
 	cd ..
 	rm -r log2ram-master
+	sudo rm log2ram.tar.gz
 }
 
 function install_speedtest() {
@@ -48,7 +49,7 @@ function install_pihole() {
 	sudo sh -c 'echo "BLOCKING_ENABLED=true" >> /etc/pihole/setupVars.conf'
 	sudo sh -c 'echo "WEBPASSWORD=" >> /etc/pihole/setupVars.conf'
 
-	cd /home/pi || exit 1
+	cd /home/pi
 
 	curl -sSL https://install.pi-hole.net > install_pihole.sh
 	chmod +x install_pihole.sh
