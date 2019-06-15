@@ -64,7 +64,11 @@ function install() {
 
 function setup() {
     if [[ "$#" -gt 0 ]]; then
-        local PUSHBULLET_API_KEY="$1"
+        PUSHBULLET_API_KEY="$1"
+    else
+        if [[ -e "$HOME/.sebpi/pushbullet_api_key" ]]; then
+            PUSHBULLET_API_KEY=$(cat "$HOME/.sebpi/pushbullet_api_key")
+        fi
     fi
 
     sed -i '' "/^$RASPI_IP_ADDRESS /d" ~/.ssh/known_hosts
