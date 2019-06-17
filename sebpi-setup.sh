@@ -57,6 +57,9 @@ function install_pihole() {
 	sudo sh -c './install_pihole.sh --unattended' # run script twice because it fails at every first install and succeeds at 2nd - don't know why yet
 	rm install_pihole.sh
 	echo | pihole -a -p
+
+	sudo sh -c 'echo "DBINTERVAL=60" >> /etc/pihole/pihole-FTL.conf'
+	sudo sh -c 'echo "MAXDBDAYS=7" >> /etc/pihole/pihole-FTL.conf'
 }
 
 PUSHBULLET_API_KEY="$1"
