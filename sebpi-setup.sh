@@ -13,6 +13,14 @@ function confirm() {
     esac
 }
 
+function force_fix_dns() {
+	until ping -c1 www.google.com
+	do
+		sudo sh -c 'echo "nameserver 1.1.1.1" > /etc/resolv.conf' # temp fix if DNS fails because of previous commands
+		sleep 1
+	done
+}
+
 function install_log2ram() {
 	if [ -e "/usr/local/bin/uninstall-log2ram.sh" ]; then
 		chmod +x /usr/local/bin/uninstall-log2ram.sh && sudo /usr/local/bin/uninstall-log2ram.sh
@@ -54,6 +62,9 @@ function install_pihole() {
 	curl -sSL https://install.pi-hole.net > install_pihole.sh
 	chmod +x install_pihole.sh
 	sudo sh -c './install_pihole.sh --unattended'
+
+	force_fix_dns
+
 	sudo sh -c './install_pihole.sh --unattended' # run script twice because it fails at every first install and succeeds at 2nd - don't know why yet
 	rm install_pihole.sh
 	echo | pihole -a -p
@@ -83,12 +94,7 @@ if [ ! -e "$SEBPI_LOCALE_GEN_FILE" ]; then
 	sudo touch "$SEBPI_LOCALE_GEN_FILE"
 fi
 
-# check DNS is working before attempting install
-until ping -c1 www.google.com
-do
-    sudo sh -c 'echo "nameserver 1.1.1.1" > /etc/resolv.conf' # temp fix if DNS fails, note that resolv.conf will be overriden during pihole install
-    sleep 1
-done
+force_fix_dns
 
 if [ -n "$PUSHBULLET_API_KEY" ]; then
 	if ! grep -q "$PUSHBULLET_API_KEY" "/etc/rc.local"; then
